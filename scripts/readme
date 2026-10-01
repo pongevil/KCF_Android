@@ -1,0 +1,2 @@
+scripts\build_release_apk.bat
+scripts\build_release_apk.bat --fcm

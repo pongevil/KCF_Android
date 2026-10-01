@@ -1,0 +1,180 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+import java.util.Locale
+
+def readDartPackageName() {
+    def pubspecFile = rootProject.file("../pubspec.yaml")
+    if (!pubspecFile.exists()) {
+        throw new GradleException("Cannot find pubspec.yaml at ${pubspecFile}")
+    }
+
+    def matcher = (pubspecFile.getText("UTF-8") =~ /(?m)^\s*name:\s*([A-Za-z0-9_-]+)\s*$/)
+    if (!matcher.find()) {
+        throw new GradleException("Cannot read the Dart package name from ${pubspecFile}")
+    }
+
+    return matcher.group(1)
+}
+
+def buildApplicationIdFromDartPackage(String dartPackageName) {
+    def suffix = dartPackageName
+        .toLowerCase(Locale.ROOT)
+        .replaceAll("[^a-z0-9]", "")
+
+    if (!(suffix ==~ /^[a-z][a-z0-9]*$/)) {
+        throw new GradleException(
+            "The pubspec package name '${dartPackageName}' cannot be converted to a valid Android applicationId"
+        )
+    }
+
+    return "app.bsmobile.${suffix}"
+}
+
+def dartPackageName = readDartPackageName()
+def generatedApplicationId = buildApplicationIdFromDartPackage(dartPackageName)
+
+println "Using Android applicationId '${generatedApplicationId}' from pubspec name '${dartPackageName}'"
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
+if (flutterVersionCode == null) {
+    flutterVersionCode = "1"
+}
+
+def flutterVersionName = localProperties.getProperty("flutter.versionName")
+if (flutterVersionName == null) {
+    flutterVersionName = "1.0"
+}
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader("UTF-8") { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
+android {
+    namespace = "app.bsmobile.businessolution"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }   
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main.jniLibs.srcDirs = ['libs/jniLibs']
+    }
+
+    defaultConfig {
+        applicationId = generatedApplicationId
+        minSdk = 26
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties["keyAlias"]
+                keyPassword keystoreProperties["keyPassword"]
+                storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+                storePassword keystoreProperties["storePassword"]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+
+def resolveApkAppName() {
+    def manifestFile = file("src/main/AndroidManifest.xml")
+    if (!manifestFile.exists()) return "app"
+    def matcher = (manifestFile.getText("UTF-8") =~ /android:label\s*=\s*"([^"]+)"/)
+    if (!matcher.find()) return "app"
+    // Keep readable name; strip characters illegal on Windows filenames.
+    return matcher.group(1).trim().replaceAll('[\\\\/:*?"<>|]', "").trim()
+}
+
+def apkAppName = resolveApkAppName()
+
+android.applicationVariants.configureEach { variant ->
+    def namedApk = "${apkAppName} V${variant.versionName}.apk"
+
+    variant.outputs.configureEach { output ->
+        output.outputFileName = namedApk
+    }
+
+    // Flutter always copies to flutter-apk/app-<mode>.apk and prints that path.
+    // Copy our named APK there too so the custom filename is easy to find.
+    def variantNameCap = variant.name.substring(0, 1).toUpperCase() + variant.name.substring(1)
+    def copyTaskName = "copyNamedApk${variantNameCap}"
+
+    tasks.register(copyTaskName) {
+        doLast {
+            def apkDir = file("${project.buildDir}/outputs/apk/${variant.name}")
+            def flutterApkDir = file("${project.buildDir}/outputs/flutter-apk")
+            def source = new File(apkDir, namedApk)
+            if (!source.exists()) {
+                println "Named APK not found: ${source}"
+                return
+            }
+            flutterApkDir.mkdirs()
+            def dest = new File(flutterApkDir, namedApk)
+            java.nio.file.Files.copy(
+                source.toPath(),
+                dest.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+            )
+            println "Named APK ready: ${dest}"
+        }
+    }
+
+    tasks.matching { it.name == "assemble${variantNameCap}" }.configureEach {
+        finalizedBy(copyTaskName)
+    }
+}
+
+flutter {
+    source = "../.."
+}
+dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0"
+    implementation fileTree(dir: 'libs/zebra', include: ['*.jar','*.aar'])
+    implementation files('libs/urovo_pda_SDK.jar')
+    implementation files('libs/urovo_rfid_SDK.jar')
+    implementation files('libs/chiper_rfid_sdk.jar')
+}
+
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}

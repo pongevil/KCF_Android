@@ -1,0 +1,6 @@
+-keep class com.ubx.** { *; }
+-keep interface com.ubx.** { *; }
+-keep class android.device.** { *; }
+-keep interface android.device.** { *; }
+-dontwarn com.ubx.**
+-dontwarn android.device.**

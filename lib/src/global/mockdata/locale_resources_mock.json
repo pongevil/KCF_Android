@@ -1,0 +1,182 @@
+{
+  "message_code": "0",
+  "message_text": "Success",
+  "data": [
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "title",
+      "resource_en": "BS Mobile",
+      "resource_th": "BS Mobile",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_assistant",
+      "resource_en": "AI Assistant",
+      "resource_th": "ผู้ช่วย AI",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_assistant_short",
+      "resource_en": "AI",
+      "resource_th": "AI",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_greeting",
+      "resource_en": "Hello, how can I help?",
+      "resource_th": "สวัสดีครับ มีอะไรให้ช่วยไหม?",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_input_hint",
+      "resource_en": "Type a question...",
+      "resource_th": "พิมพ์คำถาม...",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "clear",
+      "resource_en": "Clear",
+      "resource_th": "ล้าง",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_show_suggestions",
+      "resource_en": "Show suggested questions",
+      "resource_th": "แสดงคำถามแนะนำ",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_suggestions_loading",
+      "resource_en": "Loading suggested questions...",
+      "resource_th": "กำลังโหลดคำถามแนะนำ...",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_suggestions_title",
+      "resource_en": "Suggested questions",
+      "resource_th": "คำถามแนะนำ",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_hide_suggestions",
+      "resource_en": "Hide suggested questions",
+      "resource_th": "ซ่อนคำถามแนะนำ",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_title",
+      "resource_en": "Draft transaction (AI Proposal)",
+      "resource_th": "ร่างรายการ (AI Proposal)",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_subtitle",
+      "resource_en": "Review before saving",
+      "resource_th": "ตรวจสอบก่อนบันทึกข้อมูล",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_activity",
+      "resource_en": "Activity",
+      "resource_th": "กิจกรรม",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_target",
+      "resource_en": "Data set",
+      "resource_th": "ชุดข้อมูล",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_summary",
+      "resource_en": "Summary",
+      "resource_th": "สรุปข้อมูล",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_reference",
+      "resource_en": "References",
+      "resource_th": "รายการอ้างอิง",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_confirmed",
+      "resource_en": "Confirmed",
+      "resource_th": "ยืนยันแล้ว",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_saving",
+      "resource_en": "Saving...",
+      "resource_th": "กำลังบันทึก...",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_confirm_save",
+      "resource_en": "Confirm and save",
+      "resource_th": "ยืนยันและบันทึก",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_cancelled",
+      "resource_en": "Cancelled",
+      "resource_th": "ยกเลิกแล้ว",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_cancelling",
+      "resource_en": "Cancelling...",
+      "resource_th": "กำลังยกเลิก...",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "mobile",
+      "resource_name": "ai_proposal_cancel",
+      "resource_en": "Cancel",
+      "resource_th": "ยกเลิก",
+      "is_active": 1
+    }
+  ]
+}

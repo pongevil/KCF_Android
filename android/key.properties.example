@@ -1,0 +1,6 @@
+# Copy to key.properties and fill in values from the team keystore vault.
+# key.properties and *.keystore are gitignored — never commit real credentials.
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=bs-mobile-release
+storeFile=../bs-mobile-release.keystore

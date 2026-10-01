@@ -1,0 +1,21 @@
+{
+	"data": [
+		{
+			"user_group_id": 1,
+			"is_add_view": "Y",
+			"is_edit_view": "Y",
+			"is_delete_view": "Y",
+			"is_view": "Y",
+			"menu_id": 1,
+			"parent_menu_id": 0,
+			"menu_name": "Test",
+			"menu_group": "MAIN",
+			"menu_path": "/home",
+			"menu_sequence": 1,
+			"menu_group_sequence": 1,
+			"menu_favorite_id": 0
+		}
+	],
+	"message_code": "0",
+	"message_text": "success"
+}

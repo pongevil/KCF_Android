@@ -1,0 +1,50 @@
+{
+  "separator": "|",
+  "fields": [
+    {
+      "tag_function": "allfunction",
+      "tag_name": "item_number",
+      "tag_sequence": 1,
+      "required": "YES",
+      "data_type": "string",
+      "format": null
+    },
+    {
+      "tag_function": "allfunction",
+      "tag_name": "expirydate",
+      "tag_sequence": 2,
+      "required": "YES",
+      "data_type": "string",
+      "format": null
+    },
+    {
+      "tag_function": "delivery_order",
+      "tag_name": "batch_number",
+      "tag_sequence": 1,
+      "required": "YES",
+      "data_type": "string",
+      "format": null
+    },
+    {
+      "tag_function": "delivery_order",
+      "tag_name": "lot",
+      "tag_sequence": 4,
+      "required": "NO",
+      "data_type": "string",
+      "format": null
+    },
+    {
+      "tag_function": "delivery_order",
+      "tag_name": "expiry_date",
+      "tag_sequence": 5,
+      "required": "NO",
+      "data_type": "date",
+      "format": "dd/MM/yyyy"
+    }
+  ],
+  "message_code": "0",
+  "is_success": true,
+  "message": "SUCCESS",
+  "total_records": 0,
+  "total_pages": 0
+}

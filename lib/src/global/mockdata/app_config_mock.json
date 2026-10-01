@@ -1,0 +1,8 @@
+{
+  "message_code": "0",
+  "message_text": "Success",
+  "quantity": {
+    "decimal_places": 3,
+    "max_integer_digits": 10
+  }
+}
