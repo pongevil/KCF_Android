@@ -9,10 +9,11 @@ sealed class ConfigUrlEvent extends Equatable {
 
 /// Tests reachability of [url] and persists it on success (via repository).
 final class ConnectionTestRequested extends ConfigUrlEvent {
-  const ConnectionTestRequested(this.url);
+  const ConnectionTestRequested(this.host, this.port);
 
-  final String url;
+  final String host;
+  final int port;
 
   @override
-  List<Object?> get props => [url];
+  List<Object?> get props => [host, port];
 }

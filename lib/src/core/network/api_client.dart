@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bs_mobile/src/core/helpers/debug_log_colors.dart';
+import 'package:bs_mobile/src/core/environment/app_environment.dart';
 import 'package:bs_mobile/src/core/network/api_error_mapper.dart';
 import 'package:bs_mobile/src/core/network/api_error_notifier.dart';
 import 'package:bs_mobile/src/core/network/app_exception.dart';
@@ -25,10 +26,7 @@ class ApiClient {
   /// When true, non-gateway APIs use [_localhostBaseUrl]; paths in
   /// [_gatewayOnlyPathSegments] still use [AppStorage.getApi].
   /// Toggle via `--dart-define=USE_LOCAL_API=true`.
-  static const bool isRunLocalhost = bool.fromEnvironment(
-    'USE_LOCAL_API',
-    defaultValue: true,
-  );
+  static const bool isRunLocalhost = AppEnvironment.useLocalApi;
 
   /// Android emulator → host machine. Real device / iOS: use LAN IP instead.
   static const String _localhostBaseUrl = 'http://10.0.2.2:5087/';
@@ -41,6 +39,10 @@ class ApiClient {
     'refresh',
     'menu',
     'CheckVersion',
+    'WM3_Security',
+    'WM3_API_Mobile',
+    'Secure',
+    'Login',
   };
 
   final Dio _dio = Dio();
@@ -178,7 +180,7 @@ class ApiClient {
 
     if (useAuth) {
       final token = await AppStorage.getToken();
-      if (token != null && token.isNotEmpty) {
+      if (token != null && token.isNotEmpty && token != 'legacy-session') {
         headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
       }
     }
@@ -269,8 +271,8 @@ class ApiClient {
         statusCode: response.statusCode,
       );
     } on DioException catch (e, s) {
-      print('Debuged DioException in GET $path: $e');
-      print('Stack trace: $s');
+      DebugLogColors.error('DioException in GET $path: $e');
+      DebugLogColors.error('Stack trace: $s');
       DebugLogColors.error(e.toString());
       final msg = await _errorMapper.fromDioException(e);
       _maybeShowError(msg, showAlert: showAlert);

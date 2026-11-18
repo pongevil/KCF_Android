@@ -24,6 +24,8 @@ class VersionDownloadPermissions {
 }
 
 class VersionRepository {
+  static const _appVersionPath = 'WM3_API_Mobile/api/AppVersion';
+
   final ApiClient _apiClient;
 
   VersionRepository(this._apiClient);
@@ -38,7 +40,8 @@ class VersionRepository {
 
     final packageInfo = await PackageInfo.fromPlatform();
     final result = await _apiClient.get(
-      '/Mobile/AppVersion/CheckVersion?version=${packageInfo.version}',
+      '$_appVersionPath/checkversion',
+      queryParameters: {'version': packageInfo.version},
     );
     return ApiBaseResponse.fromJson(result.data);
   }
@@ -64,10 +67,8 @@ class VersionRepository {
   }
 
   Future<String> buildDownloadUrl() async {
-    final configHost = await AppStorage.getApi();
-    return configHost.toString().endsWith('/')
-        ? '${configHost}Mobile/Appversion/DownloadApp'
-        : '$configHost/Mobile/Appversion/DownloadApp';
+    final configHost = await ApiClient.readGatewayBaseUrl();
+    return '$configHost$_appVersionPath/downloadApp';
   }
 
   String buildApkFileName() {

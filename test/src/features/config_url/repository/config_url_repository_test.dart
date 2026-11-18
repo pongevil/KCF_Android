@@ -1,7 +1,7 @@
 import 'package:bs_mobile/src/core/network/api_client.dart';
 import 'package:bs_mobile/src/core/network/app_exception.dart';
-import 'package:bs_mobile/src/global/local/app_storage.dart';
 import 'package:bs_mobile/src/features/config_url/repository/config_url_repository.dart';
+import 'package:bs_mobile/src/global/local/app_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -13,11 +13,11 @@ void main() {
   late MockApiClient client;
   late ConfigUrlRepository repository;
 
-  const testUrl = 'https://api.example.com/';
-
-  setUpAll(() {
-    registerFallbackValue(RequestOptions(path: '/'));
-  });
+  const testHost = '10.10.60.45';
+  const testPort = 98;
+  const testBaseUrl = 'http://10.10.60.45:98/';
+  const testConnectionUrl =
+      'http://10.10.60.45:98/WM3_API_Mobile/api/ServerConnection/TestConnection';
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -25,77 +25,89 @@ void main() {
     repository = ConfigUrlRepository(client);
   });
 
-  group('ConfigUrlRepository.testConnection', () {
-    test('returns true and saves API url when status is 200', () async {
-      when(() => client.get('${testUrl}test', useAuth: false)).thenAnswer(
+  group('ConfigUrlRepository', () {
+    test('loads 10.10.60.45 and port 98 when no config is stored', () async {
+      final config = await repository.loadConfiguration();
+
+      expect(config.host, ConfigUrlRepository.defaultHost);
+      expect(config.port, ConfigUrlRepository.defaultPort);
+      expect(config.baseUrl, 'http://10.10.60.45:98');
+    });
+
+    test('loads a previously saved host and port', () async {
+      await AppStorage.setApi('http://192.168.1.20:8080');
+
+      final config = await repository.loadConfiguration();
+
+      expect(config.host, '192.168.1.20');
+      expect(config.port, 8080);
+    });
+
+    test('tests WM3_API_Mobile and saves root server URL on success', () async {
+      when(() => client.get(testConnectionUrl, useAuth: false)).thenAnswer(
         (_) async => Response(
-          requestOptions: RequestOptions(path: '${testUrl}test'),
+          requestOptions: RequestOptions(path: testConnectionUrl),
           statusCode: 200,
         ),
       );
 
-      final result = await repository.testConnection(testUrl);
+      final result = await repository.testConnection(testHost, testPort);
 
       expect(result, isTrue);
-      expect(await AppStorage.getApi(), testUrl);
-      verify(() => client.get('${testUrl}test', useAuth: false)).called(1);
+      expect(await AppStorage.getApi(), testBaseUrl);
+      verify(() => client.get(testConnectionUrl, useAuth: false)).called(1);
     });
 
-    test(
-      'returns false and does not save url when status is not 200',
-      () async {
-        when(() => client.get('${testUrl}test', useAuth: false)).thenAnswer(
-          (_) async => Response(
-            requestOptions: RequestOptions(path: '${testUrl}test'),
-            statusCode: 500,
-          ),
-        );
+    test('does not save URL when status is not reachable', () async {
+      when(() => client.get(testConnectionUrl, useAuth: false)).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: testConnectionUrl),
+          statusCode: 500,
+        ),
+      );
 
-        final result = await repository.testConnection(testUrl);
+      final result = await repository.testConnection(testHost, testPort);
 
-        expect(result, isFalse);
-        expect(await AppStorage.getApi(), isNull);
-      },
-    );
+      expect(result, isFalse);
+      expect(await AppStorage.getApi(), isNull);
+    });
+
+    test('accepts an authentication response as reachable', () async {
+      when(() => client.get(testConnectionUrl, useAuth: false)).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: testConnectionUrl),
+          statusCode: 403,
+        ),
+      );
+
+      final result = await repository.testConnection(testHost, testPort);
+
+      expect(result, isTrue);
+      expect(await AppStorage.getApi(), testBaseUrl);
+    });
 
     test('returns false when AppException is thrown', () async {
       when(
-        () => client.get('${testUrl}test', useAuth: false),
+        () => client.get(testConnectionUrl, useAuth: false),
       ).thenThrow(const AppException('timeout', statusCode: null));
 
-      final result = await repository.testConnection(testUrl);
+      final result = await repository.testConnection(testHost, testPort);
 
       expect(result, isFalse);
       expect(await AppStorage.getApi(), isNull);
     });
 
-    test('returns false when unexpected error is thrown', () async {
-      when(
-        () => client.get('${testUrl}test', useAuth: false),
-      ).thenThrow(Exception('unexpected'));
-
-      final result = await repository.testConnection(testUrl);
-
-      expect(result, isFalse);
+    test('rejects ports outside the valid range', () async {
+      expect(await repository.testConnection(testHost, 70000), isFalse);
       expect(await AppStorage.getApi(), isNull);
+      verifyNever(() => client.get(any(), useAuth: false));
     });
 
-    test('normalizes API url without trailing slash before saving', () async {
-      const urlWithoutSlash = 'https://api.example.com';
-
-      when(
-        () => client.get('${urlWithoutSlash}test', useAuth: false),
-      ).thenAnswer(
-        (_) async => Response(
-          requestOptions: RequestOptions(path: '${urlWithoutSlash}test'),
-          statusCode: 200,
-        ),
+    test('normalizes port 80 without an explicit port suffix', () {
+      expect(
+        ConfigUrlRepository.normalizeServerHost(testHost, port: 80),
+        'http://10.10.60.45',
       );
-
-      final result = await repository.testConnection(urlWithoutSlash);
-
-      expect(result, isTrue);
-      expect(await AppStorage.getApi(), '$urlWithoutSlash/');
     });
   });
 }

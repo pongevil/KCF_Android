@@ -1,4 +1,4 @@
-import 'package:bs_mobile/src/core/theme/app_theme_extension.dart';
+import 'package:bs_mobile/src/core/theme/theme_extensions.dart';
 import 'package:bs_mobile/src/shared/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +25,7 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final app = Theme.of(context).extension<AppThemeExtension>()!;
+    final app = context.appTheme;
 
     return Container(
       decoration: BoxDecoration(
@@ -154,7 +154,7 @@ class CustomInfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final app = Theme.of(context).extension<AppThemeExtension>()!;
+    final app = context.appTheme;
     final c = color ?? cs.outlineVariant;
 
     return Container(

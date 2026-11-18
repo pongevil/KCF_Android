@@ -7,12 +7,14 @@ String authLoginRequestToJson(AuthLoginRequest data) =>
     json.encode(data.toJson());
 
 class AuthLoginRequest {
+  String applicationId;
   String applicationLicense;
   String username;
   String password;
   String platform;
 
   AuthLoginRequest({
+    required this.applicationId,
     required this.applicationLicense,
     required this.username,
     required this.password,
@@ -21,6 +23,7 @@ class AuthLoginRequest {
 
   factory AuthLoginRequest.fromJson(Map<String, dynamic> json) =>
       AuthLoginRequest(
+        applicationId: json["app_id"],
         applicationLicense: json["application_license"],
         username: json["username"],
         password: json["password"],
@@ -28,6 +31,7 @@ class AuthLoginRequest {
       );
 
   Map<String, dynamic> toJson() => {
+    "app_id": applicationId,
     "application_license": applicationLicense,
     "username": username,
     "password": password,
@@ -54,10 +58,14 @@ class AuthLoginResponse {
 
   factory AuthLoginResponse.fromJson(Map<String, dynamic> json) =>
       AuthLoginResponse(
-        messageCode: json["message_code"]?.toString() ?? '',
+        messageCode:
+            json["message_code"]?.toString() ??
+            json["result_code"]?.toString() ??
+            '',
         messageText:
             json["message_text"]?.toString() ??
             json["message_status"]?.toString() ??
+            json["result_msg"]?.toString() ??
             '',
         data: json["data"] != null
             ? Data.fromJson(json["data"])

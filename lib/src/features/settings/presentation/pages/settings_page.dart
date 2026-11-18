@@ -24,6 +24,25 @@ class SettingsPage extends StatelessWidget {
             subtitle: const AppText('Scanner device settings'),
             onTap: () => context.push(Routes.configRfid),
           ),
+          ListTile(
+            leading: const Icon(Icons.settings_input_component_rounded),
+            title: const AppText('Device Settings'),
+            subtitle: const AppText('Weight scale and label printer'),
+            onTap: () => context.push(Routes.deviceSettings),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.scale_rounded),
+            title: const AppText('Goods Receive Weight Scale'),
+            subtitle: const AppText('Receive, weigh, print and close order'),
+            onTap: () => context.push(Routes.goodsReceiveWeightScale),
+          ),
+          ListTile(
+            leading: const Icon(Icons.print_rounded),
+            title: const AppText('Reprint Label'),
+            subtitle: const AppText('Reprint the latest receiving label'),
+            onTap: () => context.push(Routes.reprintLabel),
+          ),
         ],
       ),
     );

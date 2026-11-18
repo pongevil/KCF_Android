@@ -4,6 +4,22 @@
   "data": [
     {
       "platform": "MOBILE",
+      "resource_group": "splash",
+      "resource_name": "brand_name",
+      "resource_en": "ABSS",
+      "resource_th": "ABSS",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
+      "resource_group": "splash",
+      "resource_name": "product_name",
+      "resource_en": "ABSS Warehouse Management",
+      "resource_th": "ABSS Warehouse Management",
+      "is_active": 1
+    },
+    {
+      "platform": "MOBILE",
       "resource_group": "mobile",
       "resource_name": "title",
       "resource_en": "BS Mobile",

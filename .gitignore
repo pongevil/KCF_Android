@@ -29,6 +29,8 @@ doc/api/
 .idea/
 *.iml
 android/.kotlin/
+android/key.properties
+android/*.keystore
 
 # SonarQube scanner output
 .scannerwork/
@@ -37,3 +39,6 @@ android/.kotlin/
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 lib/firebase_options.dart
+
+# Local screenshots captured during device/UI testing
+/screenshot*.png

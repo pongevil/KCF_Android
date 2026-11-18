@@ -10,6 +10,23 @@ if errorlevel 1 (
   exit /b 1
 )
 
+REM Keep Java/Gradle temporary sockets inside the workspace. This avoids the
+REM Windows "Unable to establish loopback connection" failure seen when Java
+REM creates its selector pipe in the system TEMP directory.
+set "JAVA_LOOPBACK_TMP=%CD%\build\java-loopback-tmp"
+if not exist "%JAVA_LOOPBACK_TMP%" mkdir "%JAVA_LOOPBACK_TMP%"
+if errorlevel 1 (
+  echo ERROR: Cannot create Java temporary directory: %JAVA_LOOPBACK_TMP%
+  exit /b 1
+)
+set "TEMP=%JAVA_LOOPBACK_TMP%"
+set "TMP=%JAVA_LOOPBACK_TMP%"
+if defined JAVA_TOOL_OPTIONS (
+  set "JAVA_TOOL_OPTIONS=%JAVA_TOOL_OPTIONS% -Djdk.net.unixdomain.tmpdir=%JAVA_LOOPBACK_TMP%"
+) else (
+  set "JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=%JAVA_LOOPBACK_TMP%"
+)
+
 where flutter >nul 2>&1
 if errorlevel 1 (
   echo ERROR: flutter not found in PATH.

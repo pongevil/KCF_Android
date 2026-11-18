@@ -8,6 +8,8 @@ part 'config_url_state.dart';
 class ConfigUrlBloc extends Bloc<ConfigUrlEvent, ConfigUrlState> {
   final ConfigUrlRepository _repository;
 
+  ConfigUrlRepository get repository => _repository;
+
   ConfigUrlBloc(this._repository) : super(const ConfigUrlInitial()) {
     on<ConnectionTestRequested>(_onConnectionTest);
   }
@@ -17,11 +19,11 @@ class ConfigUrlBloc extends Bloc<ConfigUrlEvent, ConfigUrlState> {
     Emitter<ConfigUrlState> emit,
   ) async {
     emit(const ConfigUrlLoading());
-    final success = await _repository.testConnection(event.url);
+    final success = await _repository.testConnection(event.host, event.port);
     if (success) {
-      emit(const ConfigUrlSuccess('Connection Server Success'));
+      emit(const ConfigUrlSuccess());
     } else {
-      emit(const ConfigUrlFailure('Failed to Connection Server'));
+      emit(const ConfigUrlFailure());
     }
   }
 }

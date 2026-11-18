@@ -31,9 +31,15 @@ import 'package:bs_mobile/src/features/config_rfid/presentation/bloc/config_rfid
 import 'package:bs_mobile/src/features/config_rfid/service/rfid_device_service.dart';
 import 'package:bs_mobile/src/features/config_url/repository/config_url_repository.dart';
 import 'package:bs_mobile/src/features/config_url/presentation/bloc/config_url_bloc.dart';
+import 'package:bs_mobile/src/features/device_settings/repository/device_settings_repository.dart';
 import 'package:bs_mobile/src/features/home/presentation/bloc/menu_bloc.dart';
 import 'package:bs_mobile/src/features/home/presentation/cubit/drawer_profile_cubit.dart';
 import 'package:bs_mobile/src/features/home/repository/menu_repository.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/presentation/bloc/goods_receive_bloc.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/presentation/bloc/reprint_label_bloc.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/repository/goods_receive_repository.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/service/weight_scale_tcp_service.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/service/print_api_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -129,6 +135,24 @@ Future<void> configureDependencies() async {
     () => ConfigRfidBloc(getIt<RfidDeviceService>()),
   );
   getIt.registerFactory<DrawerProfileCubit>(() => DrawerProfileCubit());
+  getIt.registerLazySingleton<GoodsReceiveRepository>(
+    () => GoodsReceiveRepository(
+      getIt<ApiClient>(),
+      scaleService: getIt<WeightScaleTcpService>(),
+      printApiService: getIt<PrintApiService>(),
+    ),
+  );
+  getIt.registerLazySingleton<DeviceSettingsRepository>(
+    () => DeviceSettingsRepository(),
+  );
+  getIt.registerLazySingleton<WeightScaleTcpService>(WeightScaleTcpService.new);
+  getIt.registerLazySingleton<PrintApiService>(PrintApiService.new);
+  getIt.registerFactory<GoodsReceiveBloc>(
+    () => GoodsReceiveBloc(getIt<GoodsReceiveRepository>()),
+  );
+  getIt.registerFactory<ReprintLabelBloc>(
+    () => ReprintLabelBloc(getIt<GoodsReceiveRepository>()),
+  );
   getIt.registerFactory<PushNotificationBloc>(
     () => PushNotificationBloc(getIt<PushNotificationService>()),
   );

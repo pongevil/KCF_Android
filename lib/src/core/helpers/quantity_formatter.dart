@@ -48,12 +48,32 @@ class QuantityFormatter {
   /// Round before sending to API.
   static double roundForApi(num value, {QuantityConfig? config}) {
     final cfg = config ?? _config;
-    if (cfg.decimalPlaces <= 0) {
-      return value.truncateToDouble();
+    return roundHalfUp(value, decimalPlaces: cfg.decimalPlaces);
+  }
+
+  /// Round with half-up strategy at the requested decimal places.
+  /// Example: 1.335 -> 1.34 when [decimalPlaces] is 2.
+  static double roundHalfUp(num value, {required int decimalPlaces}) {
+    if (decimalPlaces <= 0) {
+      return value.roundToDouble();
     }
 
-    final factor = _pow10(cfg.decimalPlaces);
-    return (value * factor).roundToDouble() / factor;
+    final absText = value.abs().toStringAsFixed(decimalPlaces + 8);
+    final parts = absText.split('.');
+    final integerPart = parts.first;
+    final fractionPart = parts.length > 1 ? parts[1] : '';
+    final paddedFraction = fractionPart.padRight(decimalPlaces + 1, '0');
+    final keep = paddedFraction.substring(0, decimalPlaces);
+    final nextDigit = int.parse(paddedFraction[decimalPlaces]);
+
+    var scaled = BigInt.parse('$integerPart$keep');
+    if (nextDigit >= 5) {
+      scaled += BigInt.one;
+    }
+
+    final factor = _pow10(decimalPlaces);
+    final roundedAbs = scaled.toDouble() / factor;
+    return value.isNegative ? -roundedAbs : roundedAbs;
   }
 
   static double _pow10(int places) {

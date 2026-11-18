@@ -1,7 +1,7 @@
 import 'package:bs_mobile/src/core/app_config/app_config_response.dart';
-import 'package:bs_mobile/src/core/app_identity.dart';
 import 'package:bs_mobile/src/core/helpers/debug_log_colors.dart';
 import 'package:bs_mobile/src/core/network/api_client.dart';
+import 'package:bs_mobile/src/core/network/api_endpoints.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,9 +12,6 @@ import 'package:path_provider/path_provider.dart';
 /// the BLoC / coordinator applies the result to the runtime singleton.
 class AppConfigRepository {
   final ApiClient _client;
-
-  /// Switch to `false` when the real app config API is ready.
-  static const bool useMockConfig = true;
 
   AppConfigRepository(this._client);
 
@@ -33,18 +30,8 @@ class AppConfigRepository {
   }
 
   Future<AppConfigResponse> _fetchRemote() async {
-    if (useMockConfig) {
-      return _loadMockAsset();
-    }
-
     try {
-      final response = await _client.post(
-        'config',
-        data: {
-          'platform': AppIdentity.platform,
-          'application_license': AppIdentity.applicationLicense,
-        },
-      );
+      final response = await _client.get(ApiEndpoints.mobileConfigDecimal);
       return AppConfigResponse.fromJson(
         Map<String, dynamic>.from(response.data as Map),
       );
@@ -57,12 +44,12 @@ class AppConfigRepository {
         return cached;
       }
 
-      return _loadMockAsset();
+      return _loadDefaultAsset();
     }
   }
 
-  Future<AppConfigResponse> _loadMockAsset() async {
-    const assetPath = 'lib/src/global/mockdata/app_config_mock.json';
+  Future<AppConfigResponse> _loadDefaultAsset() async {
+    const assetPath = 'assets/config/app_config_default.json';
     final jsonString = await rootBundle.loadString(assetPath);
     return AppConfigResponse.fromJson(
       jsonDecode(jsonString) as Map<String, dynamic>,

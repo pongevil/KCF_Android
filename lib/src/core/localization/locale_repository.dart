@@ -6,6 +6,7 @@ import 'package:bs_mobile/src/core/helpers/debug_log_colors.dart';
 import 'package:bs_mobile/src/core/localization/locale_resources_response.dart';
 import 'package:bs_mobile/src/core/localization/locale_strings_response.dart';
 import 'package:bs_mobile/src/core/network/api_client.dart';
+import 'package:bs_mobile/src/core/network/api_endpoints.dart';
 import 'package:bs_mobile/src/global/local/app_storage.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
@@ -14,9 +15,6 @@ import 'package:path_provider/path_provider.dart';
 /// Does not mutate [LocaleService] — the BLoC applies results at runtime.
 class LocaleRepository {
   final ApiClient _client;
-
-  /// Switch to `false` when the real localization API is ready.
-  static const bool useMockLocale = false;
 
   LocaleRepository(this._client);
 
@@ -42,18 +40,14 @@ class LocaleRepository {
 
   /// Fallback messages used when a key is missing from the active locale.
   Future<Map<String, String>> loadFallbackMessages() async {
-    final fallback = await _loadMockAsset('th');
+    final fallback = await _loadFallbackAsset('th');
     return fallback.messages;
   }
 
   Future<LocaleStringsResponse> _fetchRemote(String localeId) async {
-    if (useMockLocale) {
-      return _loadMockAsset(localeId);
-    }
-
     try {
       final response = await _client.post(
-        'resource',
+        ApiEndpoints.securityResource,
         data: {
           'platform': AppIdentity.platform,
           'application_license': AppIdentity.applicationLicense,
@@ -73,12 +67,12 @@ class LocaleRepository {
         return cached;
       }
 
-      return _loadMockAsset(localeId);
+      return _loadFallbackAsset(localeId);
     }
   }
 
-  Future<LocaleStringsResponse> _loadMockAsset(String localeId) async {
-    const assetPath = 'lib/src/global/mockdata/locale_resources_mock.json';
+  Future<LocaleStringsResponse> _loadFallbackAsset(String localeId) async {
+    const assetPath = 'assets/i18n/locale_resources_fallback.json';
     final jsonString = await rootBundle.loadString(assetPath);
     return _parseResourcesResponse(
       jsonDecode(jsonString) as Map<String, dynamic>,

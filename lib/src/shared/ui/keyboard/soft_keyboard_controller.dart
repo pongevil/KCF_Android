@@ -47,7 +47,11 @@ class SoftKeyboardController with WidgetsBindingObserver {
 
   void disable() => _set(false);
 
-  void _set(bool value) {
+  /// คืนค่า preference เดิมโดยไม่สั่งให้ soft keyboard แสดงขึ้นทันที
+  /// ใช้เมื่อออกจากหน้าที่บังคับซ่อน keyboard ชั่วคราว
+  void restore(bool value) => _set(value, showWhenEnabled: false);
+
+  void _set(bool value, {bool showWhenEnabled = true}) {
     if (enabled.value == value) {
       return;
     }
@@ -55,7 +59,7 @@ class SoftKeyboardController with WidgetsBindingObserver {
     _ensureObserver();
     if (_shouldSuppress) {
       _hideKeyboard();
-    } else {
+    } else if (showWhenEnabled) {
       SystemChannels.textInput.invokeMethod<void>('TextInput.show');
     }
   }
@@ -131,7 +135,7 @@ class SoftKeyboardToggleButton extends StatelessWidget {
     }
     return ValueListenableBuilder<bool>(
       valueListenable: controller.enabled,
-      builder: (_, enabled, __) {
+      builder: (_, enabled, _) {
         return IconButton(
           tooltip: enabled ? 'ซ่อนคีย์บอร์ด' : 'แสดงคีย์บอร์ด',
           visualDensity: VisualDensity.compact,

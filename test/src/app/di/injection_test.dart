@@ -2,11 +2,13 @@ import 'package:bs_mobile/src/app/di/injection.dart';
 import 'package:bs_mobile/src/global/blocs/combobox/combobox_bloc.dart';
 import 'package:bs_mobile/src/global/blocs/combobox/repository/combobox_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     await getIt.reset();
   });
 

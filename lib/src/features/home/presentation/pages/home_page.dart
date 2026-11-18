@@ -1,8 +1,10 @@
 import 'package:bs_mobile/index.dart';
+import 'package:bs_mobile/src/core/routing/routes.dart';
 import 'package:bs_mobile/src/features/home/presentation/bloc/menu_bloc.dart';
 import 'package:bs_mobile/src/features/home/presentation/widgets/drawer_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
@@ -110,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         AppText(
-                          context.tr('mobile.title', fallback: 'BS Mobile'),
+                          context.tr('mobile.title', fallback: 'KCF WM3'),
                           color: app.barContentColor,
                         ),
                         Container(
@@ -124,7 +126,8 @@ class _HomePageState extends State<HomePage> {
                               color: app.barContentColor,
                               size: 24,
                             ),
-                            onPressed: () {},
+                            tooltip: 'Settings',
+                            onPressed: () => context.push(Routes.settings),
                           ),
                         ),
                       ],
@@ -139,6 +142,10 @@ class _HomePageState extends State<HomePage> {
                           return const _MenuShimmerList();
                         }
                         if (state is MenuSuccess) {
+                          final menuItems = state.menuItems?.data;
+                          if (menuItems == null || menuItems.isEmpty) {
+                            return _TabletMenuGrid(onRefresh: _refreshMenu);
+                          }
                           return RefreshIndicator(
                             onRefresh: _refreshMenu,
                             child: ListView.builder(
@@ -169,23 +176,13 @@ class _HomePageState extends State<HomePage> {
                                   },
                                 ),
                               ),
-                              itemCount: state.menuItems?.data?.length ?? 0,
+                              itemCount: menuItems.length,
                               shrinkWrap: true,
                               physics: const AlwaysScrollableScrollPhysics(),
                             ),
                           );
-                        } else {
-                          return RefreshIndicator(
-                            onRefresh: _refreshMenu,
-                            child: ListView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              children: const [
-                                SizedBox(height: 140),
-                                Center(child: AppText('Failed to load menu')),
-                              ],
-                            ),
-                          );
                         }
+                        return _TabletMenuGrid(onRefresh: _refreshMenu);
                       },
                     ),
                   ),
@@ -194,6 +191,78 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TabletMenuGrid extends StatelessWidget {
+  const _TabletMenuGrid({required this.onRefresh});
+
+  final Future<void> Function() onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: GridView.count(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(24),
+        crossAxisCount: 2,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: 2.4,
+        children: [
+          _TabletMenuButton(
+            icon: Icons.settings_input_component_rounded,
+            label: 'Device Settings',
+            onPressed: () => context.push(Routes.deviceSettings),
+          ),
+          _TabletMenuButton(
+            icon: Icons.scale_rounded,
+            label: 'Goods Receive Weight Scale',
+            onPressed: () => context.push(Routes.goodsReceiveWeightScale),
+          ),
+          _TabletMenuButton(
+            icon: Icons.print_rounded,
+            label: 'Reprint Label',
+            onPressed: () => context.push(Routes.reprintLabel),
+          ),
+          _TabletMenuButton(
+            icon: Icons.settings_rounded,
+            label: 'Settings',
+            onPressed: () => context.push(Routes.settings),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TabletMenuButton extends StatelessWidget {
+  const _TabletMenuButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.tonalIcon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 34),
+      label: AppText(
+        label,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        textAlign: TextAlign.center,
+      ),
+      style: FilledButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       ),
     );
   }
@@ -213,8 +282,8 @@ class _MenuShimmerList extends StatelessWidget {
       itemCount: 3,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (_, __) => const SizedBox(height: 24),
-      itemBuilder: (_, __) {
+      separatorBuilder: (_, _) => const SizedBox(height: 24),
+      itemBuilder: (_, _) {
         return Shimmer.fromColors(
           baseColor: shimmerBase,
           highlightColor: shimmerHighlight,

@@ -1,11 +1,11 @@
-# BS-Mobile — Flutter Template
+# KCF WM3 Mobile
 
-โปรเจคกลางสำหรับ **Flutter Template** พัฒนาด้วย **Flutter** — ใช้เป็นต้นฉบับด้าน architecture, shared widgets และ core modules เพื่อให้ผู้พัฒนา **Duplicate/Clone** ไปเริ่มโปรเจคของตัวเองได้เร็วขึ้น
+แอป Android สำหรับงาน KCF WM3 พัฒนาด้วย Flutter โดยใช้สถาปัตยกรรม pragmatic feature-first จาก BS-Mobile Template
 
 - **Package name:** `bs_mobile`
 - **Version:** ดูจาก [`pubspec.yaml`](pubspec.yaml) (ปัจจุบัน `1.0.0+1`)
-- เป็น **central template / boilerplate** ที่ไม่ผูกกับ domain หรือระบบธุรกิจใดระบบหนึ่ง
-- เมื่อต้องทำระบบจริง ให้ Duplicate/Clone repository นี้เป็นโปรเจคใหม่ แล้วค่อยเปลี่ยนชื่อ package, branding, config และเพิ่ม domain features ในโปรเจคนั้น
+- เป็น production application สำหรับเชื่อมต่อ WM3 Security, WM3 API Mobile, เครื่องชั่ง และ Print API
+- Production เป็น environment เริ่มต้น; localhost ใช้ได้เมื่อระบุ `--dart-define=USE_LOCAL_API=true` เท่านั้น
 - สถาปัตยกรรม: **pragmatic feature-first** (ไม่มี domain/use-case layer; BLoC เรียก repository ได้โดยตรง)
 
 รองรับ **Android และ iOS** เท่านั้นในปัจจุบัน (web / desktop ยังไม่รองรับ)
@@ -22,13 +22,13 @@ README → กฎรวม + setup (ภาษาไทยสำหรับท�
 
 ## บทบาทของ Repository นี้
 
-`BS-Mobile` คือ **Flutter Template / Central Architecture Repository** ที่เป็นกลางทาง domain และไม่ใช่ระบบธุรกิจปลายทางใด ๆ
+`KCF_Android` คือ production repository ของแอป KCF WM3 โดยเก็บ business feature ภายใต้ `lib/src/features/`
 
 แนวทางใช้งาน:
 
-1. Duplicate/Clone repository นี้เป็น repository ของโปรเจคใหม่
-2. เปลี่ยน `name`, package identifier, app identity, theme และ environment ให้ตรงกับโปรเจคปลายทาง
-3. เพิ่ม feature และ business logic เฉพาะระบบใน repository ที่ Duplicate แล้ว
+1. `lib/main.dart` เป็น production entrypoint เพียงตัวเดียว
+2. API URL ตั้งค่าผ่านหน้า Server Configuration และค่าเริ่มต้นคือ `10.10.60.45:98`
+3. Test doubles และ unit tests อยู่ใต้ `test/` เท่านั้น ไม่อยู่ใน runtime source
 
 ขณะพัฒนา template นี้ ให้แก้ไขภายใน workspace ปัจจุบัน และไม่สร้าง Flutter project หรือโฟลเดอร์โปรเจคใหม่ซ้อนขึ้นมาเอง
 

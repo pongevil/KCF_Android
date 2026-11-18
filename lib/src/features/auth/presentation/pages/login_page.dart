@@ -5,7 +5,6 @@ import 'package:bs_mobile/src/core/app_identity.dart';
 import 'package:bs_mobile/src/core/barcode/barcode_format_service.dart';
 import 'package:bs_mobile/src/core/localization/locale_extension.dart';
 import 'package:bs_mobile/src/global/blocs/app_config/app_config_bloc.dart';
-import 'package:bs_mobile/src/global/blocs/locale/locale_bloc.dart';
 import 'package:bs_mobile/src/global/local/app_storage.dart';
 import 'package:bs_mobile/src/features/auth/models/auth_model.dart';
 import 'package:bs_mobile/src/core/routing/routes.dart';
@@ -81,6 +80,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       BlocProvider.of<AuthBloc>(context).add(
         AuthLoginEvent(
           AuthLoginRequest(
+            applicationId: AppIdentity.applicationId,
             applicationLicense: AppIdentity.applicationLicense,
             username: _usernameController.text,
             password: _passwordController.text,
@@ -109,23 +109,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             CustomShowAlert.showSuccess(
               state.authResponseModel?.messageText ?? 'Login success',
             );
-            final localeBloc = context.read<LocaleBloc>();
             final appConfigBloc = context.read<AppConfigBloc>();
 
-            final localeReady = localeBloc.stream.firstWhere(
-              (localeState) =>
-                  localeState is LocaleLoaded || localeState is LocaleFailure,
-            );
             final appConfigReady = appConfigBloc.stream.firstWhere(
               (configState) =>
                   configState is AppConfigLoaded ||
                   configState is AppConfigFailure,
             );
 
-            localeBloc.add(LoadLocaleEvent());
             appConfigBloc.add(LoadAppConfigEvent());
 
-            await Future.wait([localeReady, appConfigReady]);
+            await appConfigReady;
             // Prefetch all barcode formats (non-blocking for home navigate).
             unawaited(getIt<BarcodeFormatService>().prefetchAll());
             if (!context.mounted) return;
@@ -172,9 +166,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Theme.of(
-                                              context,
-                                            ).shadowColor.withOpacity(0.05),
+                                            color: Theme.of(context).shadowColor
+                                                .withValues(alpha: 0.05),
                                             blurRadius: 20,
                                             offset: const Offset(0, 10),
                                           ),
@@ -183,7 +176,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                       child: Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Image.asset(
-                                          'assets/oga.png',
+                                          'assets/abss.png',
                                           fit: BoxFit.contain,
                                           scale: 1,
                                         ),

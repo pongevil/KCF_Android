@@ -12,7 +12,12 @@ void main() {
     test('isRegistered returns true for known menu paths', () {
       expect(RouteRegistry.isRegistered('/home'), isTrue);
       expect(RouteRegistry.isRegistered('/settings'), isTrue);
-      expect(RouteRegistry.isRegistered('/outbound_main'), isTrue);
+      expect(
+        RouteRegistry.isRegistered(Routes.goodsReceiveWeightScale),
+        isTrue,
+      );
+      expect(RouteRegistry.isRegistered(Routes.reprintLabel), isTrue);
+      expect(RouteRegistry.isRegistered(Routes.deviceSettings), isTrue);
     });
 
     test('isRegistered returns false for unknown paths', () {
@@ -23,6 +28,7 @@ void main() {
     test('registeredPaths includes all Routes constants', () {
       expect(RouteRegistry.registeredPaths, contains(Routes.settings));
       expect(RouteRegistry.registeredPaths, contains(Routes.configRfid));
+      expect(RouteRegistry.registeredPaths, contains(Routes.deviceSettings));
     });
   });
 }

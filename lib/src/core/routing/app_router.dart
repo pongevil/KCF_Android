@@ -6,8 +6,16 @@ import 'package:bs_mobile/src/global/local/app_storage.dart';
 import 'package:bs_mobile/src/features/auth/presentation/pages/login_page.dart';
 import 'package:bs_mobile/src/features/config_rfid/presentation/bloc/config_rfid_bloc.dart';
 import 'package:bs_mobile/src/features/config_rfid/presentation/pages/config_rfid_page.dart';
+import 'package:bs_mobile/src/features/config_url/presentation/bloc/config_url_bloc.dart';
 import 'package:bs_mobile/src/features/config_url/presentation/pages/config_url_page.dart';
+import 'package:bs_mobile/src/features/device_settings/presentation/pages/device_settings_page.dart';
+import 'package:bs_mobile/src/features/device_settings/repository/device_settings_repository.dart';
 import 'package:bs_mobile/src/features/home/presentation/pages/home_page.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/presentation/bloc/goods_receive_bloc.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/repository/goods_receive_repository.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/presentation/bloc/reprint_label_bloc.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/presentation/pages/goods_receive_page.dart';
+import 'package:bs_mobile/src/features/goods_receive_weight_scale/presentation/pages/reprint_label_page.dart';
 import 'package:bs_mobile/src/features/settings/presentation/pages/settings_page.dart';
 import 'package:bs_mobile/src/features/splash/presentation/pages/splash_page.dart';
 import 'package:bs_mobile/src/shared/ui/pages/not_found_page.dart';
@@ -31,9 +39,36 @@ class AppRouter {
       routes: [
         _pageRoute(Routes.splash, const SplashPage()),
         _pageRoute(Routes.login, const LoginPage()),
-        _pageRoute(Routes.configurl, const ConfigUrlPage()),
+        _pageRoute(
+          Routes.configurl,
+          BlocProvider(
+            create: (_) => getIt<ConfigUrlBloc>(),
+            child: const ConfigUrlPage(),
+          ),
+        ),
         _pageRoute(Routes.home, const HomePage()),
         _pageRoute(Routes.settings, const SettingsPage()),
+        _pageRoute(
+          Routes.deviceSettings,
+          DeviceSettingsPage(
+            repository: getIt<DeviceSettingsRepository>(),
+            goodsReceiveRepository: getIt<GoodsReceiveRepository>(),
+          ),
+        ),
+        _pageRoute(
+          Routes.goodsReceiveWeightScale,
+          BlocProvider(
+            create: (_) => getIt<GoodsReceiveBloc>(),
+            child: const GoodsReceivePage(),
+          ),
+        ),
+        _pageRoute(
+          Routes.reprintLabel,
+          BlocProvider(
+            create: (_) => getIt<ReprintLabelBloc>(),
+            child: const ReprintLabelPage(),
+          ),
+        ),
         _pageRoute(
           Routes.configRfid,
           BlocProvider(

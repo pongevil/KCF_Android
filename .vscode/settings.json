@@ -1,3 +1,7 @@
 {
-    "dart.flutterSdkPath": "C:\\src\\flutter_new_version\\flutter"
+    "dart.flutterSdkPath": "C:\\src\\flutter_new_version\\flutter",
+    "terminal.integrated.env.windows": {
+        "JAVA_HOME": "C:\\Users\\ykriangkrai\\AppData\\Local\\Programs\\Temurin17\\jdk-17.0.20.1+1",
+        "PATH": "C:\\Users\\ykriangkrai\\AppData\\Local\\Programs\\Temurin17\\jdk-17.0.20.1+1\\bin;${env:PATH}"
+    }
 }

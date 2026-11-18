@@ -1,6 +1,8 @@
 import 'package:bs_mobile/src/global/local/app_storage.dart';
+import 'package:bs_mobile/src/core/localization/locale_extension.dart';
 import 'package:bs_mobile/src/core/theme/theme_extensions.dart';
 import 'package:bs_mobile/src/features/config_url/presentation/bloc/config_url_bloc.dart';
+import 'package:bs_mobile/src/features/config_url/repository/config_url_repository.dart';
 import 'package:bs_mobile/src/shared/ui/notification/custom_show_alert.dart';
 
 import 'package:bs_mobile/src/shared/ui/widgets/custom_button.dart';
@@ -12,6 +14,7 @@ import 'package:bs_mobile/src/shared/ui/widgets/app_text.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 
 class ConfigUrlPage extends StatefulWidget {
   const ConfigUrlPage({super.key});
@@ -21,23 +24,60 @@ class ConfigUrlPage extends StatefulWidget {
 }
 
 class _ConfigUrlPageState extends State<ConfigUrlPage> {
-  final TextEditingController urlKeyController = TextEditingController();
-  final TextEditingController licenseController = TextEditingController();
-  final FocusNode urlKeyFocusNode = FocusNode();
-  final FocusNode licenseFocusNode = FocusNode();
+  final _hostController = TextEditingController();
+  final _portController = TextEditingController();
+  final _hostFocusNode = FocusNode();
+  final _portFocusNode = FocusNode();
 
   @override
   void initState() {
-    urlKeyFocusNode.requestFocus();
     super.initState();
+    _loadConfiguration();
+  }
+
+  Future<void> _loadConfiguration() async {
+    final repository = context.read<ConfigUrlBloc>().repository;
+    final config = await repository.loadConfiguration();
+    if (!mounted) return;
+    _hostController.text = config.host;
+    _portController.text = config.port.toString();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _hostFocusNode.requestFocus();
+    });
+  }
+
+  void _submit() {
+    final host = _hostController.text.trim();
+    final port = int.tryParse(_portController.text.trim());
+    if (host.isEmpty) {
+      CustomShowAlert.showError(
+        context.tr(
+          'server_config.host_required',
+          fallback: 'Please enter a server IP or host',
+        ),
+      );
+      _hostFocusNode.requestFocus();
+      return;
+    }
+    if (port == null || port < 1 || port > 65535) {
+      CustomShowAlert.showError(
+        context.tr(
+          'server_config.port_invalid',
+          fallback: 'Port must be between 1 and 65535',
+        ),
+      );
+      _portFocusNode.requestFocus();
+      return;
+    }
+    context.read<ConfigUrlBloc>().add(ConnectionTestRequested(host, port));
   }
 
   @override
   void dispose() {
-    urlKeyController.dispose();
-    licenseController.dispose();
-    urlKeyFocusNode.dispose();
-    licenseFocusNode.dispose();
+    _hostController.dispose();
+    _portController.dispose();
+    _hostFocusNode.dispose();
+    _portFocusNode.dispose();
     super.dispose();
   }
 
@@ -48,23 +88,36 @@ class _ConfigUrlPageState extends State<ConfigUrlPage> {
     return BlocListener<ConfigUrlBloc, ConfigUrlState>(
       listener: (context, state) {
         if (state is ConfigUrlLoading) {
-          CustomLoading.show(text: 'Connecting...');
+          CustomLoading.show(
+            text: context.tr(
+              'server_config.connecting',
+              fallback: 'Connecting...',
+            ),
+          );
         }
         if (state is ConfigUrlSuccess) {
           CustomLoading.dismiss(
-            messageText: state.message,
+            messageText: context.tr(
+              'server_config.connection_success',
+              fallback: 'Connection server successful',
+            ),
             alertType: CustomAlertType.success,
           );
           setState(() {});
         } else if (state is ConfigUrlFailure) {
           CustomLoading.dismiss(
-            messageText: state.message,
+            messageText: context.tr(
+              'server_config.connection_failed',
+              fallback: 'Failed to connect to server',
+            ),
             alertType: CustomAlertType.error,
           );
         }
       },
       child: Scaffold(
-        appBar: CustomGradientAppBar(title: 'Settings'),
+        appBar: CustomGradientAppBar(
+          title: context.tr('server_config.settings', fallback: 'Settings'),
+        ),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -96,8 +149,8 @@ class _ConfigUrlPageState extends State<ConfigUrlPage> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    cs.primary.withOpacity(0.2),
-                                    cs.primaryContainer.withOpacity(0.1),
+                                    cs.primary.withValues(alpha: 0.2),
+                                    cs.primaryContainer.withValues(alpha: 0.1),
                                   ],
                                 ),
                               ),
@@ -113,7 +166,10 @@ class _ConfigUrlPageState extends State<ConfigUrlPage> {
                     ),
                     const SizedBox(height: 12),
                     AppText(
-                      'Server Configuration',
+                      context.tr(
+                        'server_config.title',
+                        fallback: 'Server Configuration',
+                      ),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: cs.onSurface,
@@ -123,7 +179,10 @@ class _ConfigUrlPageState extends State<ConfigUrlPage> {
                       ),
                     ),
                     AppText(
-                      'Configure your server connection',
+                      context.tr(
+                        'server_config.subtitle',
+                        fallback: 'Configure your server connection',
+                      ),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: cs.onSurfaceVariant,
@@ -132,29 +191,69 @@ class _ConfigUrlPageState extends State<ConfigUrlPage> {
                     ),
                     const SizedBox(height: 30),
                     CustomCard(
-                      title: 'Server URL',
-                      subtitle: 'Enter your server URL key',
+                      title: context.tr(
+                        'server_config.server',
+                        fallback: 'Server',
+                      ),
+                      subtitle: context.tr(
+                        'server_config.server_desc',
+                        fallback: 'IP/host and port can be changed at any time',
+                      ),
                       icon: Icons.dns_rounded,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           CustomTextField(
-                            focusNode: urlKeyFocusNode,
-                            controller: urlKeyController,
-                            labelText: 'URL Key',
-                            hintText: 'Enter server URL key',
-                            prefixIcon: Icon(Icons.link_rounded),
+                            focusNode: _hostFocusNode,
+                            controller: _hostController,
+                            labelText: context.tr(
+                              'server_config.ip_address',
+                              fallback: 'IP Address / Host',
+                            ),
+                            hintText: ConfigUrlRepository.defaultHost,
+                            prefixIcon: const Icon(Icons.dns_rounded),
                             minLines: 1,
-                            maxLines: 5,
+                            maxLines: 1,
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) =>
+                                _portFocusNode.requestFocus(),
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextField(
+                            focusNode: _portFocusNode,
+                            controller: _portController,
+                            labelText: context.tr(
+                              'server_config.port',
+                              fallback: 'Port',
+                            ),
+                            hintText: ConfigUrlRepository.defaultPort
+                                .toString(),
+                            prefixIcon: const Icon(Icons.numbers_rounded),
+                            minLines: 1,
+                            maxLines: 1,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(5),
+                            ],
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) => _submit(),
                           ),
                           const SizedBox(height: 20),
                           FutureBuilder(
                             future: AppStorage.getApi(),
                             builder: (context, data) {
                               final urlValue =
-                                  data.data?.toString() ?? 'No URL configured';
+                                  data.data?.toString() ??
+                                  context.tr(
+                                    'server_config.not_configured',
+                                    fallback: 'No URL configured',
+                                  );
                               return CustomInfoBox(
-                                label: 'Current URL',
+                                label: context.tr(
+                                  'server_config.current_url',
+                                  fallback: 'Current URL',
+                                ),
                                 value: urlValue,
                                 icon: Icons.info_outline_rounded,
                                 color: data.data != null
@@ -165,22 +264,12 @@ class _ConfigUrlPageState extends State<ConfigUrlPage> {
                           ),
                           const SizedBox(height: 20),
                           CustomButton(
-                            text: 'Connect Server',
+                            text: context.tr(
+                              'server_config.connect',
+                              fallback: 'Connect Server',
+                            ),
                             icon: Icons.cloud_upload_rounded,
-                            onPressed: () {
-                              if (urlKeyController.text.isEmpty) {
-                                CustomShowAlert.showError(
-                                  'Please enter a URL key',
-                                );
-                                return;
-                              }
-                              final url = urlKeyController.text.endsWith('/')
-                                  ? urlKeyController.text
-                                  : '${urlKeyController.text}/';
-                              BlocProvider.of<ConfigUrlBloc>(
-                                context,
-                              ).add(ConnectionTestRequested(url));
-                            },
+                            onPressed: _submit,
                             height: 54,
                           ),
                         ],

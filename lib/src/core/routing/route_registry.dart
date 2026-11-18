@@ -13,6 +13,9 @@ class RouteRegistry {
     Routes.configurl,
     Routes.settings,
     Routes.configRfid,
+    Routes.goodsReceiveWeightScale,
+    Routes.reprintLabel,
+    Routes.deviceSettings,
   };
 
   static String normalize(String path) {

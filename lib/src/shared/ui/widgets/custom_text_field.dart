@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bs_mobile/src/core/helpers/submit_debounce.dart';
 import 'package:bs_mobile/src/shared/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -59,6 +60,7 @@ class CustomTextField extends StatefulWidget {
     this.compact = false,
     this.selectAllOnFocus = false,
     this.keyboardType,
+    this.inputFormatters,
     this.respectSoftKeyboard = false,
   });
 
@@ -129,6 +131,7 @@ class CustomTextField extends StatefulWidget {
   final bool selectAllOnFocus;
 
   final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
   /// การซ่อน soft keyboard จัดการแบบ global ผ่าน `SoftKeyboardController`
   /// (custom TextInputControl) แล้ว flag นี้จึงไม่มีผลกับตัว field โดยตรง
@@ -463,6 +466,7 @@ class _CustomTextFieldState extends State<CustomTextField>
                     readOnly: widget.readOnly, //|| widget.enableDatePicker,
                     obscureText: _obscure,
                     keyboardType: widget.keyboardType,
+                    inputFormatters: widget.inputFormatters,
                     textInputAction: widget.textInputAction,
                     textAlignVertical: useDescriptionInFieldLayout
                         ? TextAlignVertical.top

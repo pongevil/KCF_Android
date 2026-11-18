@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:bs_mobile/src/core/barcode/barcode_config_validator.dart';
 import 'package:bs_mobile/src/core/barcode/barcode_format_model.dart';
 import 'package:bs_mobile/src/core/helpers/debug_log_colors.dart';
 import 'package:bs_mobile/src/core/network/api_client.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:bs_mobile/src/core/network/api_endpoints.dart';
 
 /// Fetches barcode format configs. Does not own cache — see [BarcodeFormatService].
 ///
@@ -15,19 +13,11 @@ class BarcodeFormatRepository {
 
   final ApiClient _client;
 
-  /// Switch to `false` when the real GetBarcodeFormat API is ready.
-  static const bool useMockConfig = true;
-
-  static const _endpoint = 'ConfigApp/GetBarcodeFormat';
-  static const _mockAsset =
-      'lib/src/global/mockdata/barcode_format_all_mock.json';
-
   Future<List<BarcodeFormatConfig>> fetchAll() async {
-    if (useMockConfig) {
-      return _loadMock();
-    }
-
-    final response = await _client.get(_endpoint, showAlert: false);
+    final response = await _client.get(
+      ApiEndpoints.mobileBarcodeFormat,
+      showAlert: false,
+    );
 
     final data = response.data;
     if (data is! Map) {
@@ -36,15 +26,6 @@ class BarcodeFormatRepository {
 
     return _configsFromApiResponse(
       BarcodeFormatResponse.fromJson(Map<String, dynamic>.from(data)),
-    );
-  }
-
-  Future<List<BarcodeFormatConfig>> _loadMock() async {
-    final jsonString = await rootBundle.loadString(_mockAsset);
-    return _configsFromApiResponse(
-      BarcodeFormatResponse.fromJson(
-        jsonDecode(jsonString) as Map<String, dynamic>,
-      ),
     );
   }
 

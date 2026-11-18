@@ -1,4 +1,5 @@
 import 'package:bs_mobile/src/core/theme/app_theme_extension.dart';
+import 'package:bs_mobile/src/core/theme/theme_extensions.dart';
 import 'package:bs_mobile/src/shared/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 
@@ -95,7 +96,7 @@ class _CustomButtonState extends State<CustomButton>
 
   @override
   Widget build(BuildContext context) {
-    final app = Theme.of(context).extension<AppThemeExtension>()!;
+    final app = context.appTheme;
     final (baseColor, contentColor) = _resolveColors(app);
 
     return AnimatedBuilder(
@@ -137,14 +138,18 @@ class _CustomButtonState extends State<CustomButton>
                       Icon(widget.icon, color: contentColor, size: 20),
                       const SizedBox(width: 8),
                     ],
-                    AppText(
-                      widget.text,
-                      color: widget.textColor ?? contentColor,
-                      style: TextStyle(
-                        color: widget.textColor ?? contentColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
+                    Flexible(
+                      child: AppText(
+                        widget.text,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: widget.textColor ?? contentColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
                       ),
                     ),
                   ],

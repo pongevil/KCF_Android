@@ -1,4 +1,5 @@
 import 'package:bs_mobile/src/core/routing/routes.dart';
+import 'package:bs_mobile/src/core/localization/locale_extension.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bs_mobile/src/global/blocs/locale/locale_bloc.dart';
 import 'package:bs_mobile/src/global/local/app_storage.dart';
@@ -167,7 +168,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   height: 190 * _pulseScale.value,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(56),
-                    color: cs.primary.withOpacity(0.03),
+                    color: cs.primary.withValues(alpha: 0.03),
                   ),
                 ),
                 // Inner distinct pulse ring
@@ -176,7 +177,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   height: 150 * _pulseScale.value,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(44),
-                    color: cs.primary.withOpacity(0.05),
+                    color: cs.primary.withValues(alpha: 0.05),
                   ),
                 ),
                 // Main Logo Card
@@ -189,19 +190,21 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).shadowColor.withOpacity(0.12),
+                        color: Theme.of(
+                          context,
+                        ).shadowColor.withValues(alpha: 0.12),
                         blurRadius: 30,
                         offset: const Offset(0, 12),
                       ),
                     ],
                     border: Border.all(
-                      color: cs.outlineVariant.withOpacity(0.5),
+                      color: cs.outlineVariant.withValues(alpha: 0.5),
                       width: 1,
                     ),
                   ),
                   child: Center(
                     child: Image.asset(
-                      'assets/oga.png',
+                      'assets/abss.png',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.warehouse_rounded,
@@ -227,7 +230,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         child: Column(
           children: [
             AppText(
-              'OGA GROUP',
+              context.tr('splash.brand_name', fallback: 'ABSS'),
               style: TextStyle(
                 fontSize: 34,
                 fontWeight: FontWeight.w900,
@@ -238,7 +241,10 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 8),
             AppText(
-              'OGA GROUP Warehouse Management',
+              context.tr(
+                'splash.product_name',
+                fallback: 'ABSS Warehouse Management',
+              ),
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: cs.onSurfaceVariant,
@@ -259,7 +265,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
-                backgroundColor: cs.primary.withOpacity(0.15),
+                backgroundColor: cs.primary.withValues(alpha: 0.15),
                 valueColor: AlwaysStoppedAnimation<Color>(cs.primary),
                 minHeight: 5,
               ),
@@ -271,7 +277,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: cs.onSurfaceVariant.withOpacity(0.8),
+              color: cs.onSurfaceVariant.withValues(alpha: 0.8),
               letterSpacing: 0.2,
             ),
           ),

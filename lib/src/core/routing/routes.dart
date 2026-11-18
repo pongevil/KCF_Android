@@ -8,4 +8,7 @@ class Routes {
   static const home = '/home';
   static const settings = '/settings';
   static const configRfid = '/config_rfid';
+  static const goodsReceiveWeightScale = '/goods_receive_weight_scale';
+  static const reprintLabel = '/reprint_label';
+  static const deviceSettings = '/device_settings';
 }

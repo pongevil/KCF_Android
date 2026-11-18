@@ -8,13 +8,18 @@ class MockApiClient extends Mock implements ApiClient {}
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('loads Thai fallback messages from the bundled mock asset', () async {
-    final repository = LocaleRepository(MockApiClient());
+  test(
+    'loads Thai fallback messages from the bundled fallback asset',
+    () async {
+      final repository = LocaleRepository(MockApiClient());
 
-    final messages = await repository.loadFallbackMessages();
+      final messages = await repository.loadFallbackMessages();
 
-    expect(messages['mobile.title'], 'BS Mobile');
-    expect(messages['mobile.ai_assistant'], 'ผู้ช่วย AI');
-    expect(messages, isNotEmpty);
-  });
+      expect(messages['mobile.title'], 'BS Mobile');
+      expect(messages['mobile.ai_assistant'], 'ผู้ช่วย AI');
+      expect(messages['splash.brand_name'], 'ABSS');
+      expect(messages['splash.product_name'], 'ABSS Warehouse Management');
+      expect(messages, isNotEmpty);
+    },
+  );
 }

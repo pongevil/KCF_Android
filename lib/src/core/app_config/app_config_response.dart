@@ -17,7 +17,12 @@ class AppConfigResponse {
       messageCode: json['message_code']?.toString(),
       messageText: json['message_text']?.toString(),
       quantity: QuantityConfig.fromJson(
-        quantityJson is Map ? Map<String, dynamic>.from(quantityJson) : null,
+        quantityJson is Map
+            ? Map<String, dynamic>.from(quantityJson)
+            : json.containsKey('decimal_places') ||
+                  json.containsKey('max_integer_digits')
+            ? json
+            : null,
       ),
     );
   }

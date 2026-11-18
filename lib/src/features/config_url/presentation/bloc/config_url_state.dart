@@ -16,19 +16,9 @@ final class ConfigUrlLoading extends ConfigUrlState {
 }
 
 final class ConfigUrlSuccess extends ConfigUrlState {
-  const ConfigUrlSuccess(this.message);
-
-  final String message;
-
-  @override
-  List<Object?> get props => [message];
+  const ConfigUrlSuccess();
 }
 
 final class ConfigUrlFailure extends ConfigUrlState {
-  const ConfigUrlFailure(this.message);
-
-  final String message;
-
-  @override
-  List<Object?> get props => [message];
+  const ConfigUrlFailure();
 }

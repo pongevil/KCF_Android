@@ -3,13 +3,13 @@ description:
 alwaysApply: true
 ---
 
-# BS-Mobile — Flutter Template Agent Entry
+# KCF WM3 Mobile — Production Flutter Application
 
-This repository is a central **Flutter Template** (`package: bs_mobile`) — reusable architecture and shared modules for bootstrapping other apps. It is domain-neutral and is not a product-specific business system. Duplicate/clone it into a new project before adding domain-specific code. Pragmatic feature-first: no domain/use-case layer; BLoC calls concrete repositories that use `ApiClient`.
+This repository is the production **KCF WM3 Mobile** application (`package: bs_mobile`). It uses the BS-Mobile pragmatic feature-first architecture: no domain/use-case layer; BLoC calls concrete repositories that use `ApiClient`.
 
 ## Hard rules
 
-- Treat this repository as the reusable template source; do not assume a business domain or add product-specific behavior here by default.
+- Treat this repository as the KCF WM3 business application. Product-specific behavior belongs in an appropriately named feature under `lib/src/features/`.
 - Work inside the current repository root. Do not create a sibling project folder, run `flutter create`, or initialize another repository unless explicitly requested.
 - Reuse or extend shared widgets before creating new ones in `features/`
 - Before adding any widget, helper/formatter, or model, search the existing shared, core, global, and feature code and reuse or extend the closest implementation.

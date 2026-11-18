@@ -1,7 +1,7 @@
 name: bs_mobile
-description: "BS-Mobile — Flutter WMS mobile client (pragmatic feature-first)."
+description: "KCF WM3 production mobile client (pragmatic feature-first)."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.0.4+1
 
 environment:
   sdk: ">=3.10.3 <4.0.0"
@@ -64,10 +64,8 @@ flutter:
   assets:
     - assets/
     - assets/lottie/
-    - lib/src/global/mockdata/app_config_mock.json
-    - lib/src/global/mockdata/locale_resources_mock.json
-    - lib/src/global/mockdata/menu.json
-    - lib/src/global/mockdata/barcode_format_all_mock.json
+    - assets/config/
+    - assets/i18n/
   fonts:
     - family: Noto
       fonts:
